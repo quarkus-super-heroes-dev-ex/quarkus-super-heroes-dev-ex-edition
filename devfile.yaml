@@ -158,6 +158,9 @@ components:
       - name: debug-stats
         targetPort: 5009
         exposure: internal
+      - name: node-port
+        targetPort: 4200
+        exposure: internal
 - name: postgres
   container:
     image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/postgresql-15-c9s:c9s
@@ -355,7 +358,7 @@ commands:
     hotReloadCapable: true
   id: stats-dev-mode
 - exec:
-    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5009
+    commandLine:  export API_BASE_URL=https://$(oc get route ${DEVWORKSPACE_ID}-${DEVWORKSPACE_COMPONENT_NAME}-${FIGHTS_SERVICE_PORT}-https-fights -o jsonpath={.spec.host}) && quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5009
     component: dev-tools
     workingDir: '${PROJECTS_ROOT}/fights-ui'
     label: 'Run Dev Mode - Fights UI'
