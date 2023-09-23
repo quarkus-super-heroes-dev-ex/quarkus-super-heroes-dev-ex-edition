@@ -1,0 +1,47 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../fights-ui"
+		},
+		{
+			"path": "../heroes"
+		},
+		{
+			"path": "../villains"
+		},
+		{
+			"path": "../fights"
+		},
+		{
+			"path": "../fights-statistics"
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"redhat.vscode-yaml",
+			"redhat.java",
+			"redhat.vscode-quarkus",
+			"redhat.vscode-openshift-connector",
+			"mhutchie.git-graph",
+			"eamodio.gitlens",
+			"streetsidesoftware.code-spell-checker",
+			"johnpapa.winteriscoming",
+			"cnshenj.vscode-task-manager",
+			"angular.ng-template",
+			"johnpapa.angular2",
+			"SonatypeCommunity.vscode-iq-plugin"
+		]
+	},
+	"settings": {
+		"workbench.colorTheme": "Winter is Coming (Light)",
+		"workbench.preferredDarkColorTheme": "Winter is Coming (Dark Blue)",
+		"workbench.preferredLightColorTheme": "Winter is Coming (Light)",
+		"java.compile.nullAnalysis.mode": "disabled",
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"editor.wordWrap": "on",
+		"files.autoSave": "off"
+	}
+}

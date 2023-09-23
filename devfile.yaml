@@ -1,0 +1,367 @@
+schemaVersion: 2.2.0
+attributes:
+  controller.devfile.io/storage-type: per-workspace
+metadata:
+  name: "Quarkus Super Heroes Developer Experience Edition"
+projects:
+- name: quarkus-super-heroes-dev-ex-edition
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/quarkus-super-heroes-dev-ex-edition.git
+- name: fights-ui
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/fights-ui.git
+- name: heroes
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/heroes.git
+- name: villains
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/villains.git
+- name: fights
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/fights.git
+- name: fights-statistics
+  git:
+    checkoutFrom:
+      remote: origin
+      revision: main
+    remotes:
+      origin: https://github.com/quarkus-super-heroes-dev-ex/fights-statistics.git
+components:
+- name: dev-tools
+  attributes:
+    pod-overrides: {"metadata": {"annotations": {"io.kubernetes.cri-o.Devices":"/dev/fuse,/dev/net/tun","io.openshift.nested-podman":""}}}
+  container: 
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:nested
+    memoryRequest: 1Gi
+    memoryLimit: 12Gi
+    cpuRequest: 500m
+    cpuLimit: 4000m
+    mountSources: true
+    sourceMapping: /projects
+    env:
+    - name: SHELL
+      value: "/bin/zsh"
+    - name: TESTCONTAINERS_RYUK_DISABLED
+      value: "true"
+    - name: TESTCONTAINERS_CHECKS_DISABLE
+      value: "true"
+    - name: VSCODE_DEFAULT_WORKSPACE
+      value: "/projects/quarkus-super-heroes-dev-ex-edition/quarkus-super-heroes.code-workspace"
+    - name: FIGHTS_UI_PORT
+      value: "8080"
+    - name: HERO_SERVICE_PORT
+      value: "8081"
+    - name: VILLAIN_SERVICE_PORT
+      value: "8082"
+    - name: FIGHTS_SERVICE_PORT
+      value: "8083"
+    - name: STATS_SERVICE_PORT
+      value: "8084"
+    - name: APICURIO_PORT
+      value: "8085"
+    - name: OTEL_URL
+      value: "http://localhost:4317"
+    - name: APICURIO_URL
+      value: "http://localhost:8085/apis/registry/v2"
+    - name: KAFKA_BOOTSTRAP
+      value: "PLAINTEXT://localhost:9092"
+    - name: HERO_SERVICE_HOST
+      value: localhost
+    - name: VILLAIN_SERVICE_HOST
+      value: localhost
+    - name: HEROES_DB_USER
+      value: superman
+    - name: HEROES_DB_PWD
+      value: superman
+    - name: HEROES_DB_SCHEMA
+      value: heroes_database
+    - name: HEROES_DB_HOST
+      value: localhost
+    - name: VILLAINS_DB_USER
+      value: superbad
+    - name: VILLAINS_DB_PWD
+      value: superbad
+    - name: VILLAINS_DB_SCHEMA
+      value: villains_database
+    - name: VILLAINS_DB_HOST
+      value: localhost
+    - name: FIGHTS_DB_USER
+      value: superfight
+    - name: FIGHTS_DB_PWD
+      value: superfight
+    - name: FIGHTS_DB_SCHEMA
+      value: fights
+    - name: FIGHTS_DB_HOST
+      value: "localhost:27017"
+    - name: CORS_ORIGINS
+      value: "/.*/"
+    - name: CORS_METHODS
+      value: "GET,PUT,POST,DELETE"
+    volumeMounts:
+    - name: m2
+      path: /home/user/.m2
+    - name: npm
+      path: /home/user/.npm
+    endpoints:
+      - name: https-ui
+        targetPort: 8080
+        exposure: public
+        protocol: https
+      - name: https-heroes
+        targetPort: 8081
+        exposure: public
+        protocol: https
+      - name: https-villains
+        targetPort: 8082
+        exposure: public
+        protocol: https
+      - name: https-fights
+        targetPort: 8083
+        exposure: public
+        protocol: https
+      - name: https-stats
+        targetPort: 8084
+        exposure: public
+        protocol: https
+      - name: debug-ui
+        targetPort: 5005
+        exposure: internal
+      - name: debug-villains
+        targetPort: 5006
+        exposure: internal
+      - name: debug-heroes
+        targetPort: 5007
+        exposure: internal
+      - name: debug-fights
+        targetPort: 5008
+        exposure: internal
+      - name: debug-stats
+        targetPort: 5009
+        exposure: internal
+- name: postgres
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/postgresql-15-c9s:c9s
+    memoryRequest: 128M
+    memoryLimit: 512M
+    sourceMapping: /projects
+    mountSources: true
+    env:
+    - name: POSTGRESQL_USER
+      value: postgres
+    - name: POSTGRESQL_PASSWORD
+      value: postgres
+    - name: POSTGRESQL_DATABASE
+      value: postgres
+    volumeMounts:
+    - name: pgdata
+      path: /var/lib/pgsql/data
+    endpoints:
+      - name: postgres
+        targetPort: 5432
+        exposure: internal
+- name: apicurio
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/apicurio-registry-mem:2.4.2.Final
+    memoryRequest: 128M
+    memoryLimit: 1Gi
+    sourceMapping: /projects
+    env:
+    - name: REGISTRY_AUTH_ANONYMOUS_READ_ACCESS_ENABLED
+      value: "true"
+    - name: QUARKUS_HTTP_PORT
+      value: "8085"
+    endpoints:
+      - name: apicurio
+        targetPort: 8085
+        exposure: public
+- name: fights-db
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/mongodb:5.0
+    mountSources: true
+    env:
+    - name: MONGO_INITDB_DATABASE
+      value: fights
+    - name: MONGO_INITDB_ROOT_USERNAME
+      value: superfight
+    - name: MONGO_INITDB_ROOT_PASSWORD
+      value: superfight
+    volumeMounts:
+      - name: mongodb
+        path: /data/db
+    endpoints:
+      - name: fights-db
+        targetPort: 27017
+        exposure: internal
+    memoryRequest: 64M
+    memoryLimit: 256M
+- name: fights-kafka
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/kafka:0.34.0-kafka-3.4.0
+    env:
+    - name: LOG_DIR
+      value: /tmp/logs
+    - name: KAFKA_ADVERTISED_LISTENERS
+      value: PLAINTEXT://localhost:9092
+    endpoints:
+      - name: kafka
+        targetPort: 9092
+        exposure: internal
+    command:
+      - '/usr/bin/sh'
+    args:
+      - '-c'
+      - >-
+        /opt/kafka/bin/kafka-storage.sh format -t $(/opt/kafka/bin/kafka-storage.sh random-uuid) -c /opt/kafka/config/kraft/server.properties && bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties --override advertised.listeners=${KAFKA_ADVERTISED_LISTENERS}
+    memoryRequest: 128M
+    memoryLimit: 768M
+- name: jaeger
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/jaegertracing-all-in-one:1
+    sourceMapping: /projects
+    endpoints:
+      - exposure: public
+        name: jaeger-ui
+        targetPort: 16686
+      - exposure: internal
+        name: jaeger-thrift
+        targetPort: 14268
+      - exposure: internal
+        name: jaeger-proto
+        targetPort: 14250
+      - exposure: internal
+        name: otlp-receiver
+        targetPort: 4317
+    memoryRequest: 32M
+    memoryLimit: 128M
+- name: prometheus
+  container:
+    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/prometheus:v2.43.0
+    sourceMapping: /projects
+    args:
+      - '--config.file=/projects/quarkus-super-heroes-dev-ex-edition/dev-init/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    command:
+      - '/bin/prometheus'
+    endpoints:
+      - exposure: public
+        name: prometheus
+        targetPort: 9090
+    memoryRequest: 32M
+    memoryLimit: 128M
+    volumeMounts:
+      - name: prometheus-data
+        path: /prometheus
+- name: oc-cli
+  container:
+    args:
+      - '-c'
+      - >-
+        mkdir -p /projects/bin && cp /usr/bin/oc /projects/bin/oc && cp /usr/bin/kubectl /projects/bin/kubectl
+    command:
+      - /bin/bash
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    sourceMapping: /projects
+    mountSources: true
+    memoryRequest: 128M
+    memoryLimit: 256M
+- volume:
+    size: 4Gi
+  name: projects
+- volume:
+    size: 2Gi
+  name: m2
+- volume:
+    size: 2Gi
+  name: npm
+- volume:
+    size: 2Gi
+  name: pgdata
+- volume:
+    size: 2Gi
+  name: prometheus-data
+- volume:
+    size: 1Gi
+  name: mongodb
+commands:
+- apply:
+    component: oc-cli
+    label: Copy OpenShift CLI
+  id: cp-oc-cli
+- exec:
+    commandLine: psql -f initialize-tables.sql
+    component: postgres
+    workingDir: '${PROJECTS_ROOT}/quarkus-super-heroes-dev-ex-edition/dev-init/heroes/'
+    label: 'DB Init - Heroes Service'
+  id: create-heroes-db
+- exec:
+    commandLine: psql -f initialize-tables.sql
+    component: postgres
+    workingDir: '${PROJECTS_ROOT}/quarkus-super-heroes-dev-ex-edition/dev-init/villains/'
+    label: 'DB Init - Villains Service'
+  id: create-villains-db
+- exec:
+    commandLine: mongosh fights ${PROJECT_SOURCE}/dev-init/fights/initialize-database.js
+    component: fights-db
+    label: "DB Init - Fights Service"
+  id: init-fights-db
+- exec:
+    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5005
+    component: dev-tools
+    workingDir: '${PROJECTS_ROOT}/heroes'
+    label: 'Run Dev Mode - Heroes Service'
+    hotReloadCapable: true
+  id: heroes-service-dev-mode
+- exec:
+    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5006
+    component: dev-tools
+    workingDir: '${PROJECTS_ROOT}/villains'
+    label: 'Run Dev Mode - Villains Service'
+    hotReloadCapable: true
+  id: villains-service-dev-mode
+- exec:
+    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5007
+    component: dev-tools
+    workingDir: '${PROJECTS_ROOT}/fights'
+    label: 'Run Dev Mode - Fights Service'
+    hotReloadCapable: true
+  id: fights-service-dev-mode
+- exec:
+    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5008
+    component: dev-tools
+    workingDir: '${PROJECTS_ROOT}/fights-statistics'
+    label: 'Run Dev Mode - Fight Statistics'
+    hotReloadCapable: true
+  id: stats-dev-mode
+- exec:
+    commandLine: quarkus dev -Dquarkus.analytics.disabled=true -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0 -Ddebug=5009
+    component: dev-tools
+    workingDir: '${PROJECTS_ROOT}/fights-ui'
+    label: 'Run Dev Mode - Fights UI'
+    hotReloadCapable: true
+  id: ui-dev-mode
+events:
+  preStart:
+    - cp-oc-cli
+

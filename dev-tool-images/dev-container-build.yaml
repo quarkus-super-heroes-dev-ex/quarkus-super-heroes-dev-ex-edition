@@ -1,0 +1,103 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: dev-tools-image
+  namespace: quarkus-super-heroes-dev-images
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: dev-workspace-image
+  namespace: quarkus-super-heroes-dev-images
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: dev-tools-image
+  namespace: quarkus-super-heroes-dev-images
+spec:
+  source:
+    git:
+      uri: https://github.com/lab-monkeys/quarkus-super-heroes-dev-ex-edition.git
+      ref: main
+    contextDir: "dev-tool-images"
+  strategy:
+    dockerStrategy:
+      dockerfilePath: "./che-dev-tools.Containerfile"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: dev-tools-image:latest
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: dev-workspace-image-base
+  namespace: quarkus-super-heroes-dev-images
+spec:
+  source:
+    git:
+      uri: https://github.com/lab-monkeys/quarkus-super-heroes-dev-ex-edition.git
+      ref: main
+    contextDir: "dev-tool-images"
+  strategy:
+    dockerStrategy:
+      dockerfilePath: "./che-dev-workspace-base.Containerfile"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: dev-workspace-image:base
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: dev-workspace-image-vfs
+spec:
+  source:
+    dockerfile: |
+      FROM image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:base
+      RUN (echo '[storage]';echo 'driver = "vfs"') > "${HOME}"/.config/containers/storage.conf ; \
+      mkdir ${HOME}/proc ; \
+      (echo "[containers]";echo "netns=\"private\"";echo "volumes=[";echo "  \"${HOME}/proc:/proc:rw\"";echo "]";echo "default_sysctls = []";echo "[engine]";echo "network_cmd_options=[";echo "  \"enable_ipv6=false\"";echo "]") > ${HOME}/.config/containers/containers.conf ; \
+      (echo 'unqualified-search-registries = [';echo '  "docker.io"'; echo ']'; echo 'short-name-mode = "permissive"') > ${HOME}/.config/containers/registries.conf
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: dev-workspace-image:vfs
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: dev-workspace-image-fuse
+spec:
+  source:
+    dockerfile: |
+      FROM image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:base
+      RUN mkdir ${HOME}/proc ; \
+      (echo "[containers]";echo "netns=\"private\"";echo "volumes=[";echo "  \"${HOME}/proc:/proc:rw\"";echo "]";echo "default_sysctls = []";echo "[engine]";echo "network_cmd_options=[";echo "  \"enable_ipv6=false\"";echo "]") > ${HOME}/.config/containers/containers.conf ; \
+      (echo 'unqualified-search-registries = [';echo '  "docker.io"'; echo ']'; echo 'short-name-mode = "permissive"') > ${HOME}/.config/containers/registries.conf
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: dev-workspace-image:fuse
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: dev-workspace-image-nested
+spec:
+  source:
+    dockerfile: |
+      FROM image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:base
+      RUN (echo '[containers]';echo 'netns="private"';echo 'default_sysctls = []';echo '[engine]';echo 'network_cmd_options=[';echo '  "enable_ipv6=false"';echo ']') > ${HOME}/.config/containers/containers.conf ; \
+      (echo 'unqualified-search-registries = [';echo '  "docker.io"'; echo ']'; echo 'short-name-mode = "permissive"') > ${HOME}/.config/containers/registries.conf
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: dev-workspace-image:nested
