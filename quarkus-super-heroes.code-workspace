@@ -31,8 +31,7 @@
 			"johnpapa.winteriscoming",
 			"cnshenj.vscode-task-manager",
 			"angular.ng-template",
-			"johnpapa.angular2",
-			"SonatypeCommunity.vscode-iq-plugin"
+			"johnpapa.angular2"
 		]
 	},
 	"settings": {
