@@ -10,7 +10,8 @@
    git clone https://github.com/quarkus-super-heroes-dev-ex/quarkus-super-heroes-dev-ex-edition.git
    cd quarkus-super-heroes-dev-ex-edition
    chmod +x ./dev-tool-images/setup-dev-images.sh
-   ./dev-tool-images/setup-dev-images.sh
+   cd dev-tool-images
+   ./setup-dev-images.sh
    ```
 
 1. Wait for the image builds and imports to complete.
