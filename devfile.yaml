@@ -48,10 +48,11 @@ projects:
       origin: https://github.com/quarkus-super-heroes-dev-ex/fights-statistics.git
 components:
 - name: dev-tools
-  attributes:
-    pod-overrides: {"metadata": {"annotations": {"io.kubernetes.cri-o.Devices":"/dev/fuse,/dev/net/tun","io.openshift.nested-podman":""}}}
+  # attributes:
+  #   pod-overrides: {"metadata": {"annotations": {"io.kubernetes.cri-o.Devices":"/dev/fuse,/dev/net/tun","io.openshift.nested-podman":""}}}
   container: 
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:nested
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:nested
+    image: quay.io/cgruver0/che/dev-tools:latest
     memoryRequest: 1Gi
     memoryLimit: 12Gi
     cpuRequest: 500m
@@ -163,7 +164,8 @@ components:
         exposure: internal
 - name: postgres
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/postgresql-15-c9s:c9s
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/postgresql-15-c9s:c9s
+    image: quay.io/sclorg/postgresql-15-c9s:c9s
     memoryRequest: 128M
     memoryLimit: 512M
     sourceMapping: /projects
@@ -184,7 +186,8 @@ components:
         exposure: internal
 - name: apicurio
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/apicurio-registry-mem:2.4.2.Final
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/apicurio-registry-mem:2.4.2.Final
+    image: quay.io/apicurio/apicurio-registry-mem:2.4.2.Final
     memoryRequest: 128M
     memoryLimit: 1Gi
     sourceMapping: /projects
@@ -199,7 +202,8 @@ components:
         exposure: public
 - name: fights-db
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/mongodb:5.0
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/mongodb:5.0
+    image: docker.io/bitnami/mongodb:5.0
     mountSources: true
     env:
     - name: MONGO_INITDB_DATABASE
@@ -219,7 +223,8 @@ components:
     memoryLimit: 256M
 - name: fights-kafka
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/kafka:0.34.0-kafka-3.4.0
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/kafka:0.34.0-kafka-3.4.0
+    image: quay.io/strimzi/kafka:0.34.0-kafka-3.4.0
     env:
     - name: LOG_DIR
       value: /tmp/logs
@@ -239,7 +244,8 @@ components:
     memoryLimit: 768M
 - name: jaeger
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/jaegertracing-all-in-one:1
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/jaegertracing-all-in-one:1
+    image: docker.io/jaegertracing/all-in-one:1
     sourceMapping: /projects
     endpoints:
       - exposure: public
@@ -258,7 +264,8 @@ components:
     memoryLimit: 128M
 - name: prometheus
   container:
-    image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/prometheus:v2.43.0
+    # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/prometheus:v2.43.0
+    image: quay.io/prometheus/prometheus:v2.43.0
     sourceMapping: /projects
     args:
       - '--config.file=/projects/quarkus-super-heroes-dev-ex-edition/dev-init/prometheus.yaml'
