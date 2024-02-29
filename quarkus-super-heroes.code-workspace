@@ -17,6 +17,30 @@
 		},
 		{
 			"path": "../fights-statistics"
+		},
+		{
+			"name": "quarkus-super-heroes-dev-ex-edition",
+			"path": "/projects/quarkus-super-heroes-dev-ex-edition"
+		},
+		{
+			"name": "fights-ui",
+			"path": "/projects/fights-ui"
+		},
+		{
+			"name": "heroes",
+			"path": "/projects/heroes"
+		},
+		{
+			"name": "villains",
+			"path": "/projects/villains"
+		},
+		{
+			"name": "fights",
+			"path": "/projects/fights"
+		},
+		{
+			"name": "fights-statistics",
+			"path": "/projects/fights-statistics"
 		}
 	],
 	"extensions": {

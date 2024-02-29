@@ -52,7 +52,7 @@ components:
   #   pod-overrides: {"metadata": {"annotations": {"io.kubernetes.cri-o.Devices":"/dev/fuse,/dev/net/tun","io.openshift.nested-podman":""}}}
   container: 
     # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:nested
-    image: quay.io/cgruver0/che/dev-tools:latest
+    image: quay.io/cgruver0/che/quarkus-super-heroes:latest
     memoryRequest: 1Gi
     memoryLimit: 12Gi
     cpuRequest: 500m
@@ -203,7 +203,7 @@ components:
 - name: fights-db
   container:
     # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/mongodb:5.0
-    image: docker.io/bitnami/mongodb:5.0
+    image: quay.io/cgruver0/che/quarkus-super-heroes-mongodb:5.0 
     mountSources: true
     env:
     - name: MONGO_INITDB_DATABASE
@@ -245,7 +245,7 @@ components:
 - name: jaeger
   container:
     # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/jaegertracing-all-in-one:1
-    image: docker.io/jaegertracing/all-in-one:1
+    image: quay.io/cgruver0/che/quarkus-super-heroes-jaegertracing:1
     sourceMapping: /projects
     endpoints:
       - exposure: public
