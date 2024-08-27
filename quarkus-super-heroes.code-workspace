@@ -1,24 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "."
-		},
-		{
-			"path": "../fights-ui"
-		},
-		{
-			"path": "../heroes"
-		},
-		{
-			"path": "../villains"
-		},
-		{
-			"path": "../fights"
-		},
-		{
-			"path": "../fights-statistics"
-		},
-		{
 			"name": "quarkus-super-heroes-dev-ex-edition",
 			"path": "/projects/quarkus-super-heroes-dev-ex-edition"
 		},
