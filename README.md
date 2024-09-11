@@ -1,6 +1,8 @@
 # Developer Tooling & Workspace Setup for the Quarkus Super Heroes Project
 
-## Create Container Images for Workspaces
+## (Optional) Create Container Images for Workspaces
+
+The devfile is configured to use images in Quay.io.  You can modify it to use images in your OpenShift local registry.
 
 1. Login to your OpenShift Cluster as a non-admin user with self-provisioner rights
 
