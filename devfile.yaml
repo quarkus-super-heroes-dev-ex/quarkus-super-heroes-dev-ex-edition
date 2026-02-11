@@ -48,10 +48,6 @@ projects:
       origin: https://github.com/quarkus-super-heroes-dev-ex/fights-statistics.git
 components:
 - name: dev-tools
-  attributes:
-    pod-overrides:
-      spec:
-        hostUsers: false
   container: 
     # image: image-registry.openshift-image-registry.svc:5000/quarkus-super-heroes-dev-images/dev-workspace-image:nested
     image: quay.io/cgruver0/che/quarkus-super-heroes:latest
